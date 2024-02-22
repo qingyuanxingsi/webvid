@@ -3,6 +3,7 @@ import os
 import numpy as np
 import argparse
 import requests
+from tqdm import tqdm
 import concurrent.futures
 from mpi4py import MPI
 import warnings 
@@ -31,6 +32,7 @@ def main(args):
 
     # if not, then split in this job.
     if not os.path.exists(partition_dir):
+        print("=> Splitting csv file...")
         os.makedirs(partition_dir)
         full_df = pd.read_csv(args.csv_path)
         df_split = np.array_split(full_df, args.partitions)
@@ -64,7 +66,7 @@ def main(args):
 
     playlists_to_dl = np.sort(df['page_dir'].unique())
 
-    for page_dir in playlists_to_dl:
+    for page_dir in tqdm(playlists_to_dl):
         vid_dir_t = os.path.join(video_dir, page_dir)
         pdf = df[df['page_dir'] == page_dir]
         if len(pdf) > 0:
@@ -94,7 +96,7 @@ if __name__ == "__main__":
                         help='Partition number to download where 0 <= part < partitions')
     parser.add_argument('--data_dir', type=str, default='./data',
                         help='Directory where webvid data is stored.')
-    parser.add_argument('--csv_path', type=str, default='results_2M_train.csv',
+    parser.add_argument('--csv_path', type=str, default='results_10M_train.csv',
                         help='Path to csv data to download')
     parser.add_argument('--processes', type=int, default=8)
     args = parser.parse_args()

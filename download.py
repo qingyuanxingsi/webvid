@@ -13,9 +13,10 @@ RANK = COMM.Get_rank()
 SIZE = COMM.Get_size()
 
 def request_save(url, save_fp):
-    img_data = requests.get(url, timeout=5).content
-    with open(save_fp, 'wb') as handler:
-        handler.write(img_data)
+    if not os.path.exists(save_fp):
+        img_data = requests.get(url, timeout=5).content
+        with open(save_fp, 'wb') as handler:
+            handler.write(img_data)
 
 
 def main(args):
